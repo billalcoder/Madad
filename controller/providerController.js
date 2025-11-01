@@ -4,6 +4,7 @@ import { providerModel } from "../Model/providerBasicScheme.js";
 import { registration } from "../utils/ragistration.js";
 import { login } from "../utils/login.js";
 import { logoutService } from "../utils/logoutService.js";
+import { updateUserOrProvider } from "../utils/update.Detailes.js";
 
 export const getAllProvider = async (req, res) => {
     try {
@@ -53,6 +54,10 @@ export const providerLogin = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+}
+
+export const updateUserData = async (req, res, next) => {
+    updateUserOrProvider(req, res, providerModel, ["email", "name" , "phone"])
 }
 
 export const providerLogout = async (req, res) => {

@@ -33,10 +33,10 @@ app.use(sanitizeRequest);
 app.use(cors());
 
 // ✅ Routes
-app.use("/user", userRoute);
-app.use("/provider", providerRoute);
-app.use("/booking", bookingRoute);
-app.use("/review", reviewRoute);
+app.use("/user", authLimit, userRoute);
+app.use("/provider", authLimit, providerRoute);
+app.use("/booking", authLimit, bookingRoute);
+app.use("/review", authLimit, reviewRoute);
 
 // ✅ Error handler
 app.use(errorHandler);

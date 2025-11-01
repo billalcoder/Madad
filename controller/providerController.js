@@ -56,7 +56,7 @@ export const providerLogin = async (req, res, next) => {
     }
 }
 
-export const updateUserData = async (req, res, next) => {
+export const updateproviderData = async (req, res, next) => {
     updateUserOrProvider(req, res, providerModel, ["email", "name" , "phone"])
 }
 

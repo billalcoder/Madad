@@ -44,6 +44,7 @@ export const userRegisteration = async (req, res, next) => {
     const body = req.body
     try {
         const { message, error } = await registration(body, usersessionModel, userValidation)
+        console.log(error);
         if (!message) {
             return res.status(400).json({ error })
         }

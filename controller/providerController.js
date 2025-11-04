@@ -6,6 +6,16 @@ import { login } from "../utils/login.js";
 import { logoutService } from "../utils/logoutService.js";
 import { updateUserOrProvider } from "../utils/update.Detailes.js";
 
+export const getProvider = async (req, res) => {
+    try {
+        const provider = await providerModel.findOne({ _id: req.params.id }).lean().select("name averageRating phone category description location");
+        if (!provider) return res.status(404).json({ message: "Provider not found" });
+        res.json(provider);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching provider", error: error.message });
+    }
+};
+
 export const getAllProvider = async (req, res) => {
     try {
         const providerData = await providerModel.find().select("-password -__v");
@@ -57,7 +67,7 @@ export const providerLogin = async (req, res, next) => {
 }
 
 export const updateproviderData = async (req, res, next) => {
-    updateUserOrProvider(req, res, providerModel, ["email", "name" , "phone"])
+    updateUserOrProvider(req, res, providerModel, ["email", "name", "phone"])
 }
 
 export const providerLogout = async (req, res) => {
@@ -103,7 +113,10 @@ export const getNearbyProviders = async (req, res) => {
             },
             {
                 $project: {
+                    _id: 1,
                     name: 1,
+                    title: 1,
+                    phone: 1,
                     category: 1,
                     active: 1,
                     averageRating: 1,

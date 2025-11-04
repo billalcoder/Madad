@@ -26,14 +26,28 @@ export const getAllUser = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch providers", error: error.message });
     }
 }
+export const getProfile = async (req, res) => {
+    try {
+        const { user } = req
+
+        if (!user) {
+            return res.status(404).json({ message: "No user found" });
+        }
+
+        res.status(200).json({ user });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to fetch providers", error: error.message });
+    }
+}
 
 export const userRegisteration = async (req, res, next) => {
     const body = req.body
     try {
-        const { message } = await registration(body, usersessionModel, userValidation)
-        if (message) {
-            return res.status(200).json({ message })
+        const { message, error } = await registration(body, usersessionModel, userValidation)
+        if (!message) {
+            return res.status(400).json({ error })
         }
+        res.status(200).json({ message })
     } catch (error) {
         return next(error)
     }

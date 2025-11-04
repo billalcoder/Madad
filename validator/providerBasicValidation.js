@@ -23,7 +23,7 @@ export const providerBasicValidation = z.object({
         ),
     title: z.string().trim(),
     category: z.enum(["plumber", "electrician", "painter", "carpenter"]),
-    description: z.string().max(500).optional(),
+    description: z.string().max(500).default("").optional(),
     active: z.boolean().default(false).optional(),
     terms: z.boolean().default(false)
 })

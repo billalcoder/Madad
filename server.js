@@ -21,22 +21,23 @@ const server = http.createServer(app);
 // ✅ Setup Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: "*", // you can restrict to your frontend URL
-  },
+    origin: process.env.WEBURL || "http://localhost:5173",
+    credentials: true
+  }
 });
 
 // ✅ Middleware setup
-app.use(express.json());
 app.use(helmet());
+app.use(cors({ origin: process.env.WEBURL || "http://localhost:5173", credentials: true }));
+app.use(express.json());
 app.use(cookieParser("!@#$%^&*()!!"));
 app.use(sanitizeRequest);
-app.use(cors());
 
 // ✅ Routes
-app.use("/user", authLimit, userRoute);
-app.use("/provider", authLimit, providerRoute);
-app.use("/booking", authLimit, bookingRoute);
-app.use("/review", authLimit, reviewRoute);
+app.use("/user", userRoute);
+app.use("/provider", providerRoute);
+app.use("/booking", bookingRoute);
+app.use("/review", reviewRoute);
 
 // ✅ Error handler
 app.use(errorHandler);

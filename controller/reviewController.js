@@ -13,7 +13,8 @@ import mongoose from "mongoose";
 export const createReview = async (req, res, next) => {
   try {
     const user = req.user;
-
+    console.log(req.body);
+ 
     // 1️⃣ Validate safely
     const validated = reviewValidation.safeParse({
       ...req.body,

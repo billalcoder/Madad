@@ -20,6 +20,7 @@ export const createBooking = async (req, res, next) => {
       userId: user._id.toString(),
     });
 
+
     // Prevent duplicate or active booking
     const existingBooking = await bookingModel.findOne({
       userId: user._id,

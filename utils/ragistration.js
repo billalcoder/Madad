@@ -3,8 +3,9 @@ import { sanitizeObject } from "../utils/sanitaization.js";
 
 export async function registration(body, model, validator) {
     const cleanData = sanitizeObject(body)
+    console.log(cleanData);
     const result = validator.safeParse(cleanData);
-    if (!result.success) return { error: result.error.errors };
+    if (!result.success) return { error: result.error.errors[0].message };
     const existing = await model.findOne({ email: result.data.email });
     if (existing) return { error: "Please try different email" }
     if (!result.data.terms) return { error: "Please checked the term and condition" }

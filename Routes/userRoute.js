@@ -22,5 +22,4 @@ router.post("/varifyOtp", varifyOtp)
 
 router.post("/logout", finduser, userLogout)
 
-
-export default router;
+export default router;  

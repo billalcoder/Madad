@@ -88,12 +88,14 @@ export const updateUserData = async (req, res, next) => {
 export const GoogleLogin = async (req, res) => {
     try {
         const { credential } = req.body;
-
+        console.log(credential);
         // 1. Verify Google JWT
         const ticket = await client.verifyIdToken({
             idToken: credential,
             audience: process.env.GOOGLE_CLIENT_ID
         });
+
+        console.log(ticket);
 
         if (!ticket) return res.status(400).json({ error: "Token Invalid" })
 
@@ -101,29 +103,42 @@ export const GoogleLogin = async (req, res) => {
 
         // 2. Find or create user
         let user = await usersessionModel.findOne({ email });
+        console.log(user);
         if (!user) {
-            user = usersessionModel.create({
+            user = await usersessionModel.create({
                 name,
                 email: email.toLowerCase(),
                 password: "",
                 terms: true
             });
 
+            await sessionModel.create({
+                userId: user._id,
+                userType: "userModel"
+            })
+
+            res.cookie("sid", session._id.toString(), {
+                httpOnly: true,
+                sameSite: "none",
+                signed: true,
+                secure: true,
+                maxAge: 1000 * 60 * 60 * 24
+            });
         }
 
         await sessionModel.findOneAndDelete({ userId: user._id })
         // 4. Create session
-        const session = sessionModel.create({
+        const session = await sessionModel.create({
             userId: user._id.toString(),
             userType: "userModel"
         });
 
         // 5. Set signed cookie
-        res.cookie("sid", user._id.toString(), {
+        res.cookie("sid", session._id.toString(), {
             httpOnly: true,
-            sameSite: "lax",
+            sameSite: "none",
             signed: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             maxAge: 1000 * 60 * 60 * 24
         });
 

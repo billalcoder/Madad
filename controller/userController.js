@@ -10,6 +10,7 @@ import { login } from "../utils/login.js"
 import { logoutService } from "../utils/logoutService.js"
 import { sessionModel } from "../Model/sessionModel.js"
 import { updateUserOrProvider } from "../utils/update.Detailes.js"
+import { sendNotification } from "../utils/PushNotification.js"
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -26,6 +27,7 @@ export const getAllUser = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch providers", error: error.message });
     }
 }
+
 export const getProfile = async (req, res) => {
     try {
         const { user } = req
@@ -222,3 +224,36 @@ export const userLogout = async (req, res) => {
 
     return res.status(200).json({ success: true, message: result.message });
 }
+
+export const savePlayerId = async (req, res) => {
+    try {
+        const { playerId } = req.body;
+        console.log(playerId);
+        const user = req.user
+        const email = user.email
+
+        // Validate
+        if (!email || !playerId) {
+            return res.status(400).json({ message: "Email and playerId are required." });
+        }
+
+        // Find and update the user with the new playerId
+        const updatedUser = await usersessionModel.findOneAndUpdate(
+            { email },
+            { $set: { playerId } },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        res.status(200).json({
+            message: "Player ID updated successfully!",
+            user: updatedUser,
+        });
+    } catch (error) {
+        console.error("Error saving player ID:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+};

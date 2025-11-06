@@ -3,6 +3,7 @@ import { sessionModel } from "../Model/sessionModel.js"
 export async function finduser(req, res, next) {
     try {
         const session = req.signedCookies.sid
+        console.log(session);
         if (!session) return res.status(404).json({ error: "session not found" })
             const user = await sessionModel.findOne({ _id: session }).populate("userId")
         if (!user) {

@@ -2,6 +2,7 @@
 import { bookingModel } from "../Model/bookingSchema.js";
 import { bookingvalidation } from "../validator/bookingvalidation.js";
 import { handleResponse } from "../utils/responseHandler.js";
+import { sendNotification } from "../utils/PushNotification.js";
 
 /**
  * ✅ Create a new booking (secure + session-aware)
@@ -45,7 +46,7 @@ export const createBooking = async (req, res, next) => {
       .populate("userId", "name email")
       .populate("providerId", "name category");
 
-    return handleResponse(res, 201, "Booking created successfully!", {
+    return handleResponse(res, 201, "Please wait until Provider accept your requested", {
       booking: populatedBooking,
     });
   } catch (error) {
@@ -120,10 +121,30 @@ export const updateBookingStatus = async (req, res, next) => {
     booking.status = status;
     await booking.save();
 
+    // ✅ Populate full booking details
     const updatedBooking = await booking.populate([
-      { path: "userId", select: "name email" },
+      { path: "userId", select: "name email playerId" },
       { path: "providerId", select: "name category" },
     ]);
+
+    // ✅ Send push notification when provider accepts the booking
+    if (userType === "Provider" && status.toLowerCase() === "accepted") {
+      try {
+        // Fetch the user's OneSignal playerId
+        const userData = await usersessionModel.findById(booking.userId).select("playerId name");
+        if (userData?.playerId) {
+          await sendNotification(
+            userData.playerId,
+            `Your booking request has been accepted by ${user.name || "the provider"}! ✅`
+          );
+          console.log("📩 Notification sent to:", userData.name, userData.playerId);
+        } else {
+          console.log("⚠️ No playerId found for the user.");
+        }
+      } catch (notifyErr) {
+        console.error("❌ Error sending notification:", notifyErr);
+      }
+    }
 
     return handleResponse(res, 200, "Booking updated successfully", {
       booking: updatedBooking,

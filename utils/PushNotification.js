@@ -1,9 +1,14 @@
 import admin from "firebase-admin";
 
-export async function sendNotification(token, messages, title) {
+if (!admin.apps.length) {
+    const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_PATH);
+
     admin.initializeApp({
-        credential: JSON.parse(process.env.SERVICE_ACCOUNT_PATH)
+        credential: admin.credential.cert(serviceAccount),
     });
+}
+
+export async function sendNotification(token, messages, title) {
 
     const message = {
         notification: {

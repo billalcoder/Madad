@@ -133,10 +133,11 @@ export const updateBookingStatus = async (req, res, next) => {
 
     // ✅ Send push notification when provider accepts the booking
     if (userType === "providermodel" && status.toLowerCase() === "accepted") {
+      console.log("notification");
       try {
         // Fetch the user's OneSignal playerId
         const userData = await usersessionModel.findById(booking.userId).select("playerId name");
-        if (userData?.playerId) {
+        if (token) {
           await sendNotification(
             token,
             `Your booking request has been accepted by ${user.name || "the provider"}! ✅`,

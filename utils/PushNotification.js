@@ -1,10 +1,8 @@
-import fetch from "node-fetch";
 import admin from "firebase-admin";
-import serviceAccount from "../serviceAccountKey.json" with { type: "json" };
 
 export async function sendNotification(token, messages, title) {
     admin.initializeApp({
-        credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
+        credential: JSON.parse(process.env.SERVICE_ACCOUNT_PATH)
     });
 
     const message = {

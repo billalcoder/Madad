@@ -12,7 +12,7 @@ export async function registration(body, model, validator) {
     try {
         const hashPassword = await bcrypt.hash(result.data.password, 10)
         result.data.password = hashPassword
-         await model.create(result.data)
+        await model.create(result.data)
         return { message: "Registration Done Successfully" }
     } catch (error) {
         if (error.code === 11000) return { error: "Please try different email" }

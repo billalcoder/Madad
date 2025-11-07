@@ -3,6 +3,7 @@ import { bookingModel } from "../Model/bookingSchema.js";
 import { bookingvalidation } from "../validator/bookingvalidation.js";
 import { handleResponse } from "../utils/responseHandler.js";
 import { sendNotification } from "../utils/PushNotification.js";
+import { usersessionModel } from "../Model/userSchema.js";
 
 /**
  * ✅ Create a new booking (secure + session-aware)
@@ -114,7 +115,7 @@ export const updateBookingStatus = async (req, res, next) => {
       return handleResponse(res, 403, "You are not allowed to modify this booking");
     }
 
-    if (userType === "Provider" && booking.providerId.toString() !== user._id.toString()) {
+    if (userType === "providermodel" && booking.providerId.toString() !== user._id.toString()) {
       return handleResponse(res, 403, "You are not allowed to update this booking");
     }
 
@@ -127,15 +128,19 @@ export const updateBookingStatus = async (req, res, next) => {
       { path: "providerId", select: "name category" },
     ]);
 
+
+    const token = updatedBooking.userId.playerId
+
     // ✅ Send push notification when provider accepts the booking
-    if (userType === "Provider" && status.toLowerCase() === "accepted") {
+    if (userType === "providermodel" && status.toLowerCase() === "accepted") {
       try {
         // Fetch the user's OneSignal playerId
         const userData = await usersessionModel.findById(booking.userId).select("playerId name");
         if (userData?.playerId) {
           await sendNotification(
-            userData.playerId,
-            `Your booking request has been accepted by ${user.name || "the provider"}! ✅`
+            token,
+            `Your booking request has been accepted by ${user.name || "the provider"}! ✅`,
+            "Accepted you request"
           );
           console.log("📩 Notification sent to:", userData.name, userData.playerId);
         } else {

@@ -2,17 +2,14 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
+  host: "gmail",
   secure: false, // TLS
   auth: {
     user: process.env.EMAIL,
     pass: process.env.PASS, // Gmail App Password
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
+  }
 });
+console.log(process.env.EMAIL);
 
 export async function sendOtpMail(userEmail, otp) {
   const mailOptions = {
@@ -43,3 +40,5 @@ export async function sendOtpMail(userEmail, otp) {
     console.error("❌ Failed to send OTP email:", error);
   }
 }
+
+sendOtpMail("billalshekhani23@gmail.com" , "23323")

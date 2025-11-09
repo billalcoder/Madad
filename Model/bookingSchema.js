@@ -1,16 +1,28 @@
-import { model, Schema } from "mongoose";
+import mongoose from "mongoose";
 
-const bookingSchema = new Schema({
-    userId: { type: Schema.Types.ObjectId, ref: "userModel" },
-    providerId: { type: Schema.Types.ObjectId, ref: "providermodel" },
+const bookingSchema = new mongoose.Schema(
+  {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "userModel" },
+    providerId: { type: mongoose.Schema.Types.ObjectId, ref: "providermodel" },
     status: {
-        type: String,
-        enum: ["Requested", "Accepted", "cancelled", "completed", "in-progress"]
+      type: String,
+      enum: ["Requested", "Accepted", "in-progress", "completed", "cancelled"],
+      default: "Requested",
     },
-    createdAt: { type: Date, default: Date.now }
-})
 
-bookingSchema.index({ userId: 1, providerId: 1, status: 1 });
-bookingSchema.index({ createdAt: -1 });
+    // TTL fields
+    requestedExpiresAt: { type: Date, default: null },
+    acceptedExpiresAt: { type: Date, default: null },
+  },
+  { timestamps: true }
+);
 
-export const bookingModel = model("bookingModel", bookingSchema)
+/**
+ * 🔹 TTL indexes:
+ * - requestedExpiresAt: deletes "Requested" bookings after 5 mins
+ * - acceptedExpiresAt: deletes "Accepted" bookings after 5 mins
+ */
+bookingSchema.index({ requestedExpiresAt: 1 }, { expireAfterSeconds: 0 });
+bookingSchema.index({ acceptedExpiresAt: 1 }, { expireAfterSeconds: 0 });
+
+export const bookingModel = mongoose.model("bookingModel", bookingSchema);

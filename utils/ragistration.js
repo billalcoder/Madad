@@ -8,7 +8,8 @@ export async function registration(body, model, validator) {
     if (!result.success) return { error: result.error.errors[0].message };
     const existing = await model.findOne({ email: result.data.email });
     if (existing) return { error: "Please try different email" }
-    if (!result.data.terms) return { error: "Please checked the term and condition" }
+    console.log(!result.data.terms);
+    if (result.data.terms) return { error: "Please checked the term and condition" }
     try {
         const hashPassword = await bcrypt.hash(result.data.password, 10)
         result.data.password = hashPassword

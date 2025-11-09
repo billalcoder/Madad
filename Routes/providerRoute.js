@@ -18,4 +18,4 @@ router.post("/login", providerLogin)
 
 router.post("/logout", finduser, providerLogout)
 
-export default router;  
+export default router;

@@ -160,12 +160,12 @@ export const sendOtp = async (req, res) => {
         if (!email) {
             return res.status(400).json({ error: "invalid email" })
         }
-        else {
-            const user = await usersessionModel.findOne({ email })
-            if (!user) {
-                return res.json({ error: "If the email is registered, OTP has been sent" })
-            }
-        }
+        // else {
+        //     const user = await usersessionModel.findOne({ email })
+        //     if (!user) {
+        //         return res.json({ error: "If the email is registered, OTP has been sent" })
+        //     }
+        // }
 
         // Generate 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();

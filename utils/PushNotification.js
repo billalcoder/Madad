@@ -10,6 +10,7 @@ if (!admin.apps.length) {
 
 export async function sendNotification(token, messages, title) {
 
+
     const message = {
         notification: {
             title,

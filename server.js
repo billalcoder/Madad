@@ -48,7 +48,7 @@ io.on("connection", (socket) => {
   handleSocketConnection(socket, io);
 });
 
-// ✅ Server listen
+
 server.listen(4000, (err) => {
   if (!err) console.log("✅ Server & Socket.IO running on port 4000");
   else console.log("❌ Something went wrong:", err);
